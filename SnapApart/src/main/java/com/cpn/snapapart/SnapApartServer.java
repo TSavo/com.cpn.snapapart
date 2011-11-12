@@ -81,7 +81,7 @@ public class SnapApartServer implements Remote, Partitioner {
 		try {
 			String name = "SnapApartServer";
 			SnapApartServer engine = new SnapApartServer();
-			SnapApartServer stub = (SnapApartServer) UnicastRemoteObject.exportObject(engine, 0);
+			Partitioner stub = (Partitioner) UnicastRemoteObject.exportObject(engine, 0);
 			Registry registry = LocateRegistry.getRegistry();
 			registry.rebind(name, stub);
 			System.out.println("SnapApartServer bound");
