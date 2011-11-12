@@ -1,0 +1,7 @@
+grant{
+permission java.net.SocketPermission "127.0.0.1:1099", "connect, resolve";
+permission java.net.SocketPermission "127.0.0.1:1024-", "connect, resolve";
+permission java.net.SocketPermission "127.0.0.1:1024-", "accept, resolve";
+permission java.net.SocketPermission "10.1.10.249:8773", "connect, resolve";
+permission java.io.FilePermission "<<ALL FILES>>", "execute";
+};

@@ -11,13 +11,12 @@ import com.cpn.execute.LogDevice;
 import com.cpn.execute.SystemExecutor;
 import com.cpn.execute.SystemExecutorException;
 
-public class SnapApartServer implements Remote, Partitioner {
+public class SnapApartServer implements Partitioner {
 
 	public SnapApartServer() {
 		super();
 	}
 
-	@Override
 	public int partitionVolume(String aDevice) throws RemoteException {
 		LogDevice out = new LogDevice() {
 
@@ -81,7 +80,8 @@ public class SnapApartServer implements Remote, Partitioner {
 		try {
 			String name = "SnapApartServer";
 			SnapApartServer engine = new SnapApartServer();
-			Partitioner stub = (Partitioner) UnicastRemoteObject.exportObject(engine, 0);
+			Remote stub = UnicastRemoteObject.exportObject(engine, 0);
+			
 			Registry registry = LocateRegistry.getRegistry();
 			registry.rebind(name, stub);
 			System.out.println("SnapApartServer bound");
