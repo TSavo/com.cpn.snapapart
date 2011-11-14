@@ -84,7 +84,10 @@ public class SnapApartServer implements Partitioner {
 			
 			Registry registry = LocateRegistry.getRegistry();
 			registry.rebind(name, stub);
-			System.out.println("SnapApartServer bound");
+			System.out.println("SnapApartServer listening...");
+			while(true){
+				Thread.sleep(100000);
+			}
 		} catch (Exception e) {
 			System.err.println("SnapApartServer exception:");
 			e.printStackTrace();
