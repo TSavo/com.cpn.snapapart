@@ -17,7 +17,7 @@ public class SnapApartServer implements Partitioner {
 		super();
 	}
 
-	public int partitionVolume(String aDevice) throws RemoteException {
+	public synchronized int partitionVolume(String aDevice) throws RemoteException {
 		LogDevice out = new LogDevice() {
 
 			@Override
