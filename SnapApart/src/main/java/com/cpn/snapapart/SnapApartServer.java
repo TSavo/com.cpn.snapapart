@@ -13,6 +13,7 @@ import com.cpn.execute.SystemExecutorException;
 
 public class SnapApartServer implements Partitioner {
 
+	String server = "172.16.254.10";
 	public SnapApartServer() {
 		super();
 	}
@@ -38,9 +39,9 @@ public class SnapApartServer implements Partitioner {
 		System.out.println("Partitioning " + aDevice);
 		SystemExecutor exec = new SystemExecutor().setWorkingDirectory("/root").setOutputLogDevice(out).setErrorLogDevice(err);
 		try {
-			exec.runCommand("iscsiadm -m discovery -t sendtargets -p splaims01");
+			exec.runCommand("iscsiadm -m discovery -t sendtargets -p " + server);
 
-			exec.runCommand("iscsiadm -m node -T iqn.2010-10.org.openstack:" + aDevice.replaceAll("vol-", "volume-") + " -p 172.16.3.1:3260 --login");
+			exec.runCommand("iscsiadm -m node -T iqn.2010-10.org.openstack:" + aDevice.replaceAll("vol-", "volume-") + " -p " + server + ":3260 --login");
 
 			try {
 				exec.runCommand("/root/partDisk.sh");
@@ -64,7 +65,7 @@ public class SnapApartServer implements Partitioner {
 					exec.runCommand("umount /mnt/kav_base");
 				}
 			} finally {
-				exec.runCommand("iscsiadm -m node -T iqn.2010-10.org.openstack:" + aDevice.replaceAll("vol-", "volume-") + " -p 172.16.3.1:3260 --logout");
+				exec.runCommand("iscsiadm -m node -T iqn.2010-10.org.openstack:" + aDevice.replaceAll("vol-", "volume-") + " -p " + server + ":3260 --logout");
 				exec.runCommand("iscsiadm -m session");
 			}
 			return 0;
