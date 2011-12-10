@@ -45,11 +45,11 @@ public class SnapApartServer implements Partitioner {
 
 			try {
 				exec.runCommand("/root/partDisk.sh");
-				exec.runCommand("mkfs.ext3 /dev/sdc1");
-				exec.runCommand("mkfs.ext3 /dev/sdc2");
-				exec.runCommand("mkfs.ext3 /dev/sdc3");
-				exec.runCommand("mount /dev/sdc1 /mnt/rom");
-				exec.runCommand("mount /dev/sdc2 /mnt/flash");
+				exec.runCommand("mkfs.ext3 /dev/sdb1");
+				exec.runCommand("mkfs.ext3 /dev/sdb2");
+				exec.runCommand("mkfs.ext3 /dev/sdb3");
+				exec.runCommand("mount /dev/sdb1 /mnt/rom");
+				exec.runCommand("mount /dev/sdb2 /mnt/flash");
 				exec.runCommand("mount /dev/sdc3 /mnt/kav_base");
 				try {
 					exec.runCommand("echo cpn > /mnt/rom/company");
