@@ -7,23 +7,29 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.cpn.execute.LogDevice;
 import com.cpn.execute.SystemExecutor;
 import com.cpn.execute.SystemExecutorException;
 
 public class SnapApartServer implements Partitioner {
 
-	String server = "172.16.254.10";
+	String server = SnapApartServerConfiguration.get("SnapApartServer.Server"); //$NON-NLS-1$
+	String device = SnapApartServerConfiguration.get("SnapApartServer.Device"); //$NON-NLS-1$
+	
 	public SnapApartServer() {
 		super();
 	}
 
+	Logger log = LoggerFactory.getLogger(SnapApartServer.class);
 	public synchronized int partitionVolume(String aDevice) throws RemoteException {
 		LogDevice out = new LogDevice() {
 
 			@Override
 			public LogDevice log(String aString) {
-				System.out.println(aString);
+				log.info(aString);
 				return this;
 			}
 		};
@@ -31,42 +37,42 @@ public class SnapApartServer implements Partitioner {
 
 			@Override
 			public LogDevice log(String aString) {
-				System.err.println(aString);
+				log.error(aString);
 				return this;
 			}
 		};
 
-		System.out.println("Partitioning " + aDevice);
-		SystemExecutor exec = new SystemExecutor().setWorkingDirectory("/root").setOutputLogDevice(out).setErrorLogDevice(err);
+		log.info("Partitioning " + aDevice); //$NON-NLS-1$
+		SystemExecutor exec = new SystemExecutor().setWorkingDirectory("/root").setOutputLogDevice(out).setErrorLogDevice(err); //$NON-NLS-1$
 		try {
-			exec.runCommand("iscsiadm -m discovery -t sendtargets -p " + server);
+			exec.runCommand("iscsiadm -m discovery -t sendtargets -p " + server); //$NON-NLS-1$
 
-			exec.runCommand("iscsiadm -m node -T iqn.2010-10.org.openstack:" + aDevice.replaceAll("vol-", "volume-") + " -p " + server + ":3260 --login");
+			exec.runCommand("iscsiadm -m node -T iqn.2010-10.org.openstack:" + aDevice.replaceAll("vol-", "volume-") + " -p " + server + ":3260 --login"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-5$
 
 			try {
-				exec.runCommand("/root/partDisk.sh");
-				exec.runCommand("mkfs.ext3 /dev/sdb1");
-				exec.runCommand("mkfs.ext3 /dev/sdb2");
-				exec.runCommand("mkfs.ext3 /dev/sdb3");
-				exec.runCommand("mount /dev/sdb1 /mnt/rom");
-				exec.runCommand("mount /dev/sdb2 /mnt/flash");
-				exec.runCommand("mount /dev/sdb3 /mnt/kav_base");
+				exec.runCommand("/root/partDisk.sh"); //$NON-NLS-1$
+				exec.runCommand("mkfs.ext3 " + device + "1"); //$NON-NLS-1$ //$NON-NLS-2$
+				exec.runCommand("mkfs.ext3 " + device + "2"); //$NON-NLS-1$ //$NON-NLS-2$
+				exec.runCommand("mkfs.ext3 " + device + "3"); //$NON-NLS-1$ //$NON-NLS-2$
+				exec.runCommand("mount " + device + "1 /mnt/rom"); //$NON-NLS-1$ //$NON-NLS-2$
+				exec.runCommand("mount " + device + "2 /mnt/flash"); //$NON-NLS-1$ //$NON-NLS-2$
+				exec.runCommand("mount " + device + "3 /mnt/kav_base"); //$NON-NLS-1$ //$NON-NLS-2$
 				try {
-					exec.runCommand("echo cpn > /mnt/rom/company");
-					exec.runCommand("rmdir /mnt/rom/lost+found");
-					exec.runCommand("rmdir /mnt/flash/lost+found");
-					exec.runCommand("rmdir /mnt/kav_base/lost+found");
-					exec.runCommand("mkdir -p /mnt/flash/persist/etc");
-					exec.runCommand("rsync -a /var/www/download/kav/i386_itw/ /mnt/kav_base/");
+					exec.runCommand("echo cpn > /mnt/rom/company"); //$NON-NLS-1$
+					exec.runCommand("rmdir /mnt/rom/lost+found"); //$NON-NLS-1$
+					exec.runCommand("rmdir /mnt/flash/lost+found"); //$NON-NLS-1$
+					exec.runCommand("rmdir /mnt/kav_base/lost+found"); //$NON-NLS-1$
+					exec.runCommand("mkdir -p /mnt/flash/persist/etc"); //$NON-NLS-1$
+					exec.runCommand("rsync -a /var/www/download/kav/i386_itw/ /mnt/kav_base/"); //$NON-NLS-1$
 
 				} finally {
-					exec.runCommand("umount /mnt/rom");
-					exec.runCommand("umount /mnt/flash");
-					exec.runCommand("umount /mnt/kav_base");
+					exec.runCommand("umount /mnt/rom"); //$NON-NLS-1$
+					exec.runCommand("umount /mnt/flash"); //$NON-NLS-1$
+					exec.runCommand("umount /mnt/kav_base"); //$NON-NLS-1$
 				}
 			} finally {
-				exec.runCommand("iscsiadm -m node -T iqn.2010-10.org.openstack:" + aDevice.replaceAll("vol-", "volume-") + " -p " + server + ":3260 --logout");
-				exec.runCommand("iscsiadm -m session");
+				exec.runCommand("iscsiadm -m node -T iqn.2010-10.org.openstack:" + aDevice.replaceAll("vol-", "volume-") + " -p " + server + ":3260 --logout"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+				exec.runCommand("iscsiadm -m session"); //$NON-NLS-1$
 			}
 			return 0;
 		} catch (SystemExecutorException | IOException e) {
@@ -79,18 +85,18 @@ public class SnapApartServer implements Partitioner {
 			System.setSecurityManager(new SecurityManager());
 		}
 		try {
-			String name = "SnapApartServer";
+			String name = "SnapApartServer"; //$NON-NLS-1$
 			SnapApartServer engine = new SnapApartServer();
 			Remote stub = UnicastRemoteObject.exportObject(engine, 0);
 			
 			Registry registry = LocateRegistry.getRegistry();
 			registry.rebind(name, stub);
-			System.out.println("SnapApartServer listening...");
+			System.out.println("SnapApartServer listening..."); //$NON-NLS-1$
 			while(true){
 				Thread.sleep(100000);
 			}
 		} catch (Exception e) {
-			System.err.println("SnapApartServer exception:");
+			System.err.println("SnapApartServer exception:"); //$NON-NLS-1$
 			e.printStackTrace();
 		}
 	}
