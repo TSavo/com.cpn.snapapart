@@ -23,13 +23,12 @@ public class SnapApartServer implements Partitioner {
 		super();
 	}
 
-	Logger log = LoggerFactory.getLogger(SnapApartServer.class);
 	public synchronized int partitionVolume(String aDevice) throws RemoteException {
 		LogDevice out = new LogDevice() {
 
 			@Override
 			public LogDevice log(String aString) {
-				log.info(aString);
+				System.out.println(aString);
 				return this;
 			}
 		};
@@ -37,12 +36,12 @@ public class SnapApartServer implements Partitioner {
 
 			@Override
 			public LogDevice log(String aString) {
-				log.error(aString);
+				System.out.println(aString);
 				return this;
 			}
 		};
 
-		log.info("Partitioning " + aDevice); //$NON-NLS-1$
+		System.out.println("Partitioning " + aDevice); //$NON-NLS-1$
 		SystemExecutor exec = new SystemExecutor().setWorkingDirectory("/root").setOutputLogDevice(out).setErrorLogDevice(err); //$NON-NLS-1$
 		try {
 			exec.runCommand("iscsiadm -m discovery -t sendtargets -p " + server); //$NON-NLS-1$
