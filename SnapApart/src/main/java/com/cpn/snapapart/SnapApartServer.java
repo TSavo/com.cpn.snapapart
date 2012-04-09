@@ -7,9 +7,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.cpn.execute.LogDevice;
 import com.cpn.execute.SystemExecutor;
 import com.cpn.execute.SystemExecutorException;
